@@ -1,3 +1,5 @@
 result*
 .direnv/
 scratchpad.md
+**/.zig-cache/
+**/zig-out/

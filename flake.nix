@@ -39,7 +39,10 @@
               git
               nickel
               mask
+
+              # Zig tools
               unstable.zig
+              unstable.zls
             ];
 
             shellHook = ''
