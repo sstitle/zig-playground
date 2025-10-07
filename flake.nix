@@ -41,8 +41,13 @@
               mask
 
               # Zig tools
-              unstable.zig
-              unstable.zls
+              # unstable.zig_0_14
+              # unstable.zls
+
+              # Qt 6 development dependencies
+              qt6.qtbase
+              qt6.qttools
+              qt6.qtdeclarative
             ];
 
             shellHook = ''
