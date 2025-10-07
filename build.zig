@@ -11,25 +11,24 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    // Use system GLFW instead of bundled version
-    exe.linkSystemLibrary("glfw");
-    exe.linkLibC();
+    const zglfw = b.dependency("zglfw", .{
+        .target = target,
+    });
+    exe.root_module.addImport("zglfw", zglfw.module("root"));
+    exe.linkLibrary(zglfw.artifact("glfw"));
 
-    // Add system frameworks for macOS
+    @import("zgpu").addLibraryPathsTo(exe);
+    const zgpu = b.dependency("zgpu", .{
+        .target = target,
+    });
+    exe.root_module.addImport("zgpu", zgpu.module("root"));
+    exe.linkLibrary(zgpu.artifact("zdawn"));
+
     if (target.result.os.tag == .macos) {
-        // Add Homebrew paths
-        exe.addLibraryPath(.{ .cwd_relative = "/usr/local/opt/glfw/lib" });
-        exe.addIncludePath(.{ .cwd_relative = "/usr/local/opt/glfw/include" });
-
-        // Add SDK framework paths - check both Nix and system locations
-        const sdk_path = "/nix/store/5gfsv5n8zhpnl9yhggjpxrxg0jyflwja-apple-sdk-11.3/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk";
-        const framework_path = b.fmt("{s}/System/Library/Frameworks", .{sdk_path});
-        exe.addFrameworkPath(.{ .cwd_relative = framework_path });
-
-        exe.linkFramework("Cocoa");
-        exe.linkFramework("IOKit");
-        exe.linkFramework("CoreVideo");
-        exe.linkFramework("OpenGL");
+        if (b.lazyDependency("system_sdk", .{})) |system_sdk| {
+            exe.addLibraryPath(system_sdk.path("macos12/usr/lib"));
+            exe.addSystemFrameworkPath(system_sdk.path("macos12/System/Library/Frameworks"));
+        }
     }
 
     b.installArtifact(exe);
