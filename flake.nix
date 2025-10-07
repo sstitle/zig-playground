@@ -37,17 +37,7 @@
             buildInputs = with pkgs; [
               # Core tools
               git
-              nickel
               mask
-
-              # Zig tools
-              # unstable.zig_0_14
-              # unstable.zls
-
-              # Qt 6 development dependencies
-              qt6.qtbase
-              qt6.qttools
-              qt6.qtdeclarative
             ];
 
             shellHook = ''
